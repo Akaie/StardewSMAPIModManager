@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<asmv1:assembly xsi:schemaLocation="urn:schemas-microsoft-com:asm.v1 assembly.adaptive.xsd" manifestVersion="1.0" xmlns:asmv1="urn:schemas-microsoft-com:asm.v1" xmlns="urn:schemas-microsoft-com:asm.v2" xmlns:asmv2="urn:schemas-microsoft-com:asm.v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:co.v1="urn:schemas-microsoft-com:clickonce.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:co.v2="urn:schemas-microsoft-com:clickonce.v2">
+  <asmv1:assemblyIdentity name="StardewModManager.exe" version="1.0.0.2" publicKeyToken="4d20db7ea28330a6" language="neutral" processorArchitecture="msil" type="win32" />
+  <application />
+  <entryPoint>
+    <assemblyIdentity name="StardewModManager" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
+    <commandLine file="StardewModManager.exe" parameters="" />
+  </entryPoint>
+  <trustInfo>
+    <security>
+      <applicationRequestMinimum>
+        <PermissionSet Unrestricted="true" ID="Custom" SameSite="site" />
+        <defaultAssemblyRequest permissionSetReference="Custom" />
+      </applicationRequestMinimum>
+      <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
+        <!--
+          UAC Manifest Options
+          If you want to change the Windows User Account Control level replace the
+          requestedExecutionLevel node with one of the following.
+
+        <requestedExecutionLevel  level="asInvoker" uiAccess="false" />
+        <requestedExecutionLevel  level="requireAdministrator" uiAccess="false" />
+        <requestedExecutionLevel  level="highestAvailable" uiAccess="false" />
+
+         If you want to utilize File and Registry Virtualization for backward
+         compatibility then delete the requestedExecutionLevel node.
+    -->
+        <requestedExecutionLevel level="asInvoker" uiAccess="false" />
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+  <dependency>
+    <dependentOS>
+      <osVersionInfo>
+        <os majorVersion="5" minorVersion="1" buildNumber="2600" servicePackMajor="0" />
+      </osVersionInfo>
+    </dependentOS>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="preRequisite" allowDelayedBinding="true">
+      <assemblyIdentity name="Microsoft.Windows.CommonLanguageRuntime" version="4.0.30319.0" />
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="StardewModManager.exe" size="12256">
+      <assemblyIdentity name="StardewModManager" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>Wkbz57JU3CgRA6wTouV9pOdfb7z2XsH7M2J4G0QCLfI=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <file name="StardewModManager.exe.config" size="189">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>R+Wg8QGvQVHX8T0ta/qbhH1bXkqY0fRnS3wBV3J0bN8=</dsig:DigestValue>
+    </hash>
+  </file>
+<publisherIdentity name="CN=DESKTOP-6NAEEC5\AFRAZ" issuerKeyHash="2c8ddc0f2a637dbcc5fadcb56513038f24466839" /><Signature Id="StrongNameSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha256" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" /><DigestValue>bP7wHOU0RCjiQ/vxL6SpYiG/KC6FqiLqJHvWC8Cm+Mg=</DigestValue></Reference></SignedInfo><SignatureValue>r3lWqZz4iKdS8PmlXjmUPz9BGb1piZCAJadG1XOBSyl/3rT7TaGChEaf6MWg0wxrUlGdp/zay5tGDuKui+HEBC1ucpx0OtWjm/sOG7jvcKbcWK7hmHN7BEjbo2t9b26m5SUwS30EV1swi+icYdCdQ+k7O1nz/um5pQN0974tls8=</SignatureValue><KeyInfo Id="StrongNameKeyInfo"><KeyValue><RSAKeyValue><Modulus>vWLtK9x3UJ8hFhKUfnVkyoi5zHW+a2m3Daq70do/Nl1ittwfq9ShRwhNS40wNae86HQUtCnRtQRwBHUtxqU048X4qlc/Fer+tc87d+AI3HGg4AzQ4OB5ZDCd1MtYfx2+7sHOATz5tly1dgkOHDk6pRz2o5nxYOIALxjWoo7lnHE=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><msrel:RelData xmlns:msrel="http://schemas.microsoft.com/windows/rel/2005/reldata"><r:license xmlns:r="urn:mpeg:mpeg21:2003:01-REL-R-NS" xmlns:as="http://schemas.microsoft.com/windows/pki/2005/Authenticode"><r:grant><as:ManifestInformation Hash="c8f8a6c00bd67b24ea22aa852e28bf2162a9a42ff1fb43e2284434e51cf0fe6c" Description="" Url=""><as:assemblyIdentity name="StardewModManager.exe" version="1.0.0.2" publicKeyToken="4d20db7ea28330a6" language="neutral" processorArchitecture="msil" type="win32" /></as:ManifestInformation><as:SignedBy /><as:AuthenticodePublisher><as:X509SubjectName>CN=DESKTOP-6NAEEC5\AFRAZ</as:X509SubjectName></as:AuthenticodePublisher></r:grant><r:issuer><Signature Id="AuthenticodeSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha256" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" /><DigestValue>j7TuXqXR03LQ3ktYLnx03fOpmKpBskdF8UbEvQ5nSlo=</DigestValue></Reference></SignedInfo><SignatureValue>elMbGIPfTO17lBqiV24ZX3ZNOmlr+oiOmzyPLJR2kiYvQJh73WFpYrGzWAu8pTjyC0BK3Mn+jtDrDAVFf4Dato24eyVx+51ECsOO6lH+c+biA+m2/bx/lURSugW3zaP3NIwdISkX1YjXrr9AxXBdkJZh384MzSg0oIplu3rMcKo=</SignatureValue><KeyInfo><KeyValue><RSAKeyValue><Modulus>vWLtK9x3UJ8hFhKUfnVkyoi5zHW+a2m3Daq70do/Nl1ittwfq9ShRwhNS40wNae86HQUtCnRtQRwBHUtxqU048X4qlc/Fer+tc87d+AI3HGg4AzQ4OB5ZDCd1MtYfx2+7sHOATz5tly1dgkOHDk6pRz2o5nxYOIALxjWoo7lnHE=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><X509Data><X509Certificate>MIIB7TCCAVagAwIBAgIQPkBoi/10HLZKi4twPEwF5TANBgkqhkiG9w0BAQsFADA1MTMwMQYDVQQDHioARABFAFMASwBUAE8AUAAtADYATgBBAEUARQBDADUAXABBAEYAUgBBAFowHhcNMjAxMjI2MTkwMzQ5WhcNMjExMjI3MDEwMzQ5WjA1MTMwMQYDVQQDHioARABFAFMASwBUAE8AUAAtADYATgBBAEUARQBDADUAXABBAEYAUgBBAFowgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAL1i7Svcd1CfIRYSlH51ZMqIucx1vmtptw2qu9HaPzZdYrbcH6vUoUcITUuNMDWnvOh0FLQp0bUEcAR1LcalNOPF+KpXPxXq/rXPO3fgCNxxoOAM0ODgeWQwndTLWH8dvu7BzgE8+bZctXYJDhw5OqUc9qOZ8WDiAC8Y1qKO5ZxxAgMBAAEwDQYJKoZIhvcNAQELBQADgYEAHgrqa+LnWU290yLdZibRk6y3Zkm6T0sO9jqWBq/Llmewvwe/f+vt4fvDZfgrc/IgbZEXh7EyS7p01Tvwo4AFO4KowshGbH7vlgemc0CTWPzn+VUBWlxA/hV+eNqZzHqciFqp0O8Jrc1C63T5MkesCWuff8Csg5gmQYe4gisT2Fg=</X509Certificate></X509Data></KeyInfo></Signature></r:issuer></r:license></msrel:RelData></KeyInfo></Signature></asmv1:assembly>
