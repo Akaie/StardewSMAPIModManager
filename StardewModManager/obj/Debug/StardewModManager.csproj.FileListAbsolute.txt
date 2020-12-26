@@ -1,0 +1,14 @@
+C:\Users\AFRAZ\source\repos\StardewModManager\StardewModManager\bin\Debug\StardewModManager.exe.config
+C:\Users\AFRAZ\source\repos\StardewModManager\StardewModManager\bin\Debug\StardewModManager.exe
+C:\Users\AFRAZ\source\repos\StardewModManager\StardewModManager\bin\Debug\StardewModManager.pdb
+C:\Users\AFRAZ\source\repos\StardewModManager\StardewModManager\obj\Debug\StardewModManager.csprojAssemblyReference.cache
+C:\Users\AFRAZ\source\repos\StardewModManager\StardewModManager\obj\Debug\StardewModManager.Form1.resources
+C:\Users\AFRAZ\source\repos\StardewModManager\StardewModManager\obj\Debug\StardewModManager.Properties.Resources.resources
+C:\Users\AFRAZ\source\repos\StardewModManager\StardewModManager\obj\Debug\StardewModManager.csproj.GenerateResource.cache
+C:\Users\AFRAZ\source\repos\StardewModManager\StardewModManager\obj\Debug\StardewModManager.csproj.CoreCompileInputs.cache
+C:\Users\AFRAZ\source\repos\StardewModManager\StardewModManager\obj\Debug\StardewModManager.exe
+C:\Users\AFRAZ\source\repos\StardewModManager\StardewModManager\obj\Debug\StardewModManager.pdb
+C:\Users\AFRAZ\source\repos\StardewModManager\StardewModManager\bin\Debug\StardewModManager.exe.manifest
+C:\Users\AFRAZ\source\repos\StardewModManager\StardewModManager\bin\Debug\StardewModManager.application
+C:\Users\AFRAZ\source\repos\StardewModManager\StardewModManager\obj\Debug\StardewModManager.exe.manifest
+C:\Users\AFRAZ\source\repos\StardewModManager\StardewModManager\obj\Debug\StardewModManager.application
