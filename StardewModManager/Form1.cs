@@ -22,46 +22,77 @@ namespace StardewModManager
         {
             FolderBrowserDialog browser = new FolderBrowserDialog();
             DialogResult result = browser.ShowDialog();
-            if( result == DialogResult.OK)
+            if (result == DialogResult.OK)
             {
                 String foldername = browser.SelectedPath + "\\";
                 currentLocation.Text = foldername;
-                String[] dirs = Directory.GetDirectories(foldername, "*", SearchOption.TopDirectoryOnly);
-                enabledList.Items.Clear();
-                disabledList.Items.Clear();
-                foreach(String i in dirs)
+                if (Directory.Exists(foldername))
                 {
-                    String rel = i.Replace(foldername, "");
-                    if (rel.Substring(0,1) == ".")
+                    try
                     {
-                        disabledList.Items.Add(rel.Substring(1));
+                        String[] dirs = Directory.GetDirectories(foldername, "*", SearchOption.TopDirectoryOnly);
+                        enabledList.Items.Clear();
+                        disabledList.Items.Clear();
+                        foreach (String i in dirs)
+                        {
+                            String rel = i.Replace(foldername, "");
+                            if (rel.Substring(0, 1) == ".")
+                            {
+                                disabledList.Items.Add(rel.Substring(1));
+                            }
+                            else
+                            {
+                                enabledList.Items.Add(rel);
+                            }
+                        }
                     }
-                    else
+                    catch (IOException except)
                     {
-                        enabledList.Items.Add(rel);
+                        MessageBox.Show(except.GetBaseException().ToString(), "Whoops", MessageBoxButtons.OK);
+                        currentLocation.Text = "Something very wrong just happened trying to open that folder, please contact the author!";
                     }
                 }
+            }
+            else
+            {
+                currentLocation.Text = "Something very wrong just happened trying to open that folder, please contact the author!";
             }
         }
 
         private void steamLoc_Click(object sender, EventArgs e)
         {
             String foldername = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Stardew Valley\\Mods\\";
+            if (!Directory.Exists(foldername))
+                foldername = "C:\\Program Files\\Steam\\steamapps\\common\\Stardew Valley\\Mods\\";
             currentLocation.Text = foldername;
-            String[] dirs = Directory.GetDirectories(foldername, "*", SearchOption.TopDirectoryOnly);
-            enabledList.Items.Clear();
-            disabledList.Items.Clear();
-            foreach (String i in dirs)
+            if (Directory.Exists(foldername)) {
+                try
+                {
+                    String[] dirs = Directory.GetDirectories(foldername, "*", SearchOption.TopDirectoryOnly);
+                    enabledList.Items.Clear();
+                    disabledList.Items.Clear();
+                    foreach (String i in dirs)
+                    {
+                        String rel = i.Replace(foldername, "");
+                        if (rel.Substring(0, 1) == ".")
+                        {
+                            disabledList.Items.Add(rel.Substring(1));
+                        }
+                        else
+                        {
+                            enabledList.Items.Add(rel);
+                        }
+                    }
+                }
+                catch (IOException except)
+                {
+                    MessageBox.Show(except.GetBaseException().ToString(), "Whoops", MessageBoxButtons.OK);
+                    currentLocation.Text = "Something very wrong just happened trying to open that folder, please contact the author!";
+                }
+            }
+            else
             {
-                String rel = i.Replace(foldername, "");
-                if (rel.Substring(0, 1) == ".")
-                {
-                    disabledList.Items.Add(rel.Substring(1));
-                }
-                else
-                {
-                    enabledList.Items.Add(rel);
-                }
+                currentLocation.Text = "Sorry, can't find Steam folder. Try browsing to it manually.";
             }
         }
 
