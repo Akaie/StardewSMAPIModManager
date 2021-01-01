@@ -179,7 +179,7 @@ updatekey = "e93a683d4db167202baad2b49bfc526912ec0578baaf38ba6914f5d77606adbc"
 try:
     messagebox.showinfo("Checking", "Checking for updates!")
     context=ssl._create_unverified_context()
-    updatematchurlobject = urllib.request.urlopen("https://raw.githubusercontent.com/Akaie/StardewSMAPIModManager/main/Executables/key", context=context)
+    updatematchurlobject = urllib.request.urlopen("https://raw.githubusercontent.com/Akaie/StardewSMAPIModManager/main/bin/key", context=context)
     updatematch = updatematchurlobject.read().decode('utf-8')
     if updatekey != updatematch:
         dia = messagebox.askquestion("Update found!", "There appears to be an update! Do you want to go to the Nexus Mod page?")
