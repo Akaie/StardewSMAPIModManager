@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
+from tkinter import Menu
 import os
 from os import path
 import platform
@@ -17,6 +18,13 @@ class Application(tk.Frame):
         self.create_widgets()
         
     def create_widgets(self):
+        #menubar
+        menubar = Menu(self)
+        loadoutmenu = Menu(menubar, tearoff=0)
+        loadoutmenu.add_command(label="Save Loadout...", command = self.loadoutSave)
+        loadoutmenu.add_command(label="Load Loadout...", command = self.loadoutLoad)
+        menubar.add_cascade(label="File", menu=loadoutmenu)
+        self.master.config(menu=menubar)
         #Browse Button
         self.browseButton = tk.Button(self)
         self.browseButton["text"] = "Browse..."
@@ -84,7 +92,85 @@ class Application(tk.Frame):
             error_file = open("error_log.txt", "w")
             error_file.write(traceback.format_exc())
             error_file.close()
-        
+
+    def loadoutLoad(self):
+        locationToLoad = filedialog.askopenfile(filetypes = [(".load Files", "*.load")])
+        self.pathTo["text"] = ""
+        self.enabledList.delete(0,tk.END)
+        self.disabledList.delete(0, tk.END)
+        try:
+            cancelled = False
+            if path.exists(locationToLoad.name):
+                with open(locationToLoad.name, "r") as f:
+                    line = f.readline()
+                    if line:
+                        if path.exists(line.strip()):
+                            self.pathTo["text"] = line.strip()
+                            disabledlisttomonitor = []
+                            enabledlisttomonitor = []
+                            for dirs in next(os.walk(line.strip()))[1]:
+                                if(dirs[0:1] != "."):
+                                    enabledlisttomonitor.append(dirs)
+                                else:
+                                    disabledlisttomonitor.append(dirs)
+                        else:
+                            messagebox.showerror(message="The folder specified in this .load file no longer exists, can't load this file!")
+                            cancelled = True
+                    else:
+                        messagebox.showerror(message="This file is empty, can't load this file!")
+                    line = f.readline()
+                    while line and not cancelled:
+                        if not line[0:1] == ".":
+                            if line.strip() in enabledlisttomonitor:
+                                enabledlisttomonitor.remove(line.strip())
+                            if "."+line.strip() in disabledlisttomonitor:
+                                disabledlisttomonitor.remove("."+line.strip())
+                            if path.exists(self.pathTo["text"] + "/"+line.strip()):
+                                self.enabledList.insert(self.enabledList.size(), line.strip())
+                            elif path.exists(self.pathTo["text"] + "/."+line.strip()):
+                                os.rename(self.pathTo["text"] + "/." + line.strip(), self.pathTo["text"] + "/" + line.strip())
+                                self.enabledList.insert(self.enabledList.size(), line.strip())
+                            else:
+                                messagebox.showerror(message=line.strip()+" is not in the mod folder, skipping!")
+                        else:
+                            if line.strip()[1:] in enabledlisttomonitor:
+                                enabledlisttomonitor.remove(line.strip()[1:])
+                            if line.strip() in disabledlisttomonitor:
+                                disabledlisttomonitor.remove(line.strip())
+                            if path.exists(self.pathTo["text"] + "/."+line.strip()[1:]):
+                                self.disabledList.insert(self.disabledList.size(), line.strip()[1:])
+                            elif path.exists(self.pathTo["text"] + "/"+line.strip()[1:]):
+                                os.rename(self.pathTo["text"] + "/" + line.strip()[1:], self.pathTo["text"] + "/." + line.strip()[1:])
+                                self.disabledList.insert(self.disabledList.size(), line.strip()[1:])
+                            else:
+                                messagebox.showerror(message=line.strip()+" is not in the mod folder, skipping!")
+                        line = f.readline()
+                    f.close()
+                    if len(enabledlisttomonitor) != 0 or len(disabledlisttomonitor) != 0:
+                        for i in enabledlisttomonitor:
+                            self.enabledList.insert(self.enabledList.size(), i)
+                        for i in disabledlisttomonitor:
+                            self.disabledList.insert(self.disabledList.size(), i)
+                        messagebox.showinfo(message="There were mods in your folder not specified in the load folder, these have defaulted to their current state.")
+        except IOError as e:
+            messagebox.showerror(message = "Couldn't open the file, aborting!\n"+str(e))
+    def loadoutSave(self):
+        locationToSave = filedialog.asksaveasfilename(filetypes = [(".load Files", "*.load")])
+        if not path.exists(path.dirname(locationToSave)):
+            try:
+                os.makedirs(path.dirname(filename))
+            except OSError as e:
+                messagebox.showerror(message = "Couldn't create the folder structure to save file in, aborting!\n"+str(e))
+        try:
+            with open(locationToSave, "w") as f:
+                f.write(self.pathTo["text"]+"\n")
+                for i in range(0,self.enabledList.size()):
+                    f.write(self.enabledList.get(i)+"\n")
+                for i in range(0,self.disabledList.size()):
+                    f.write("."+self.disabledList.get(i)+"\n")
+                f.close()
+        except IOError as e:
+            messagebox.showerror(message = "Couldn't open the file for saving!\n"+ str(e))
     def folderPicker(self):
         folder_selected = filedialog.askdirectory()
         if not folder_selected == "":
@@ -129,7 +215,7 @@ class Application(tk.Frame):
     def moveToDisabled(self):
         tupleEnabled = self.enabledList.curselection()
         try:
-            for i in tupleEnabled:
+            for i in reversed(tupleEnabled):
                 holder = self.enabledList.get(i)
                 os.rename(self.pathTo["text"] + "/" + holder, self.pathTo["text"] + "/." + holder)
                 self.enabledList.delete(i)
@@ -143,7 +229,7 @@ class Application(tk.Frame):
     def moveToEnabled(self):
         tupleDisabled = self.disabledList.curselection()
         try:
-            for i in tupleDisabled:
+            for i in reversed(tupleDisabled):
                 holder = self.disabledList.get(i)
                 os.rename(self.pathTo["text"] + "/." + holder, self.pathTo["text"] + "/" + holder)
                 self.disabledList.delete(i)
@@ -175,7 +261,7 @@ root.resizable(0,0)
 root.iconbitmap('3.ico')
 app=Application(master=root)
 root.protocol("WM_DELETE_WINDOW", lambda: closingWindow(app, root))
-updatekey = "e93a683d4db167202baad2b49bfc526912ec0578baaf38ba6914f5d77606adbc"
+updatekey = "ee821072f3f8be34269a2091fd24eb0e819175dde52cb923888af6fd09dfb34d"
 try:
     messagebox.showinfo("Checking", "Checking for updates!")
     context=ssl._create_unverified_context()
