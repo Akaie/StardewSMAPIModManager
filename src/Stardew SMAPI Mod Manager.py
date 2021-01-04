@@ -393,7 +393,7 @@ class Application(tk.Frame):
                     if holderfin == "":
                         holderfin = holderfin + holdersplit[j]
                     else:
-                        holderfin = holderfin + self.slash + holdersplit[j][1:]
+                        holderfin = holderfin + self.slash + holdersplit[j]
                 if holderfin == "":
                     holderfin = holdersplit[len(holdersplit) - 1][1:]
                 else:
@@ -434,7 +434,7 @@ root.resizable(0,0)
 root.iconbitmap('3.ico')
 app=Application(master=root)
 root.protocol("WM_DELETE_WINDOW", lambda: closingWindow(app, root))
-updatekey = "0ccd6aaa4328b8dfca003cf76a5df0a2565e33479d78fb551d74ceef1e8c9f5c"
+updatekey = "394063d304b3141d11e3a4df47f065d5609f1a0d3e926c8a178261243ed342f7"
 try:
     context=ssl._create_unverified_context()
     updatematchurlobject = urllib.request.urlopen("https://raw.githubusercontent.com/Akaie/StardewSMAPIModManager/main/bin/key", context=context)
