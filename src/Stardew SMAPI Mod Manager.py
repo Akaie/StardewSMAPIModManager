@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import Menu
+from tkinter import ttk
 import os
 from os import path
 import platform
@@ -10,6 +11,7 @@ import urllib.request
 import webbrowser
 import ssl
 import subprocess
+import shutil
 
 class Application(tk.Frame):
     
@@ -25,6 +27,10 @@ class Application(tk.Frame):
             self.slash = "/"
         else:
             self.slash = "\\"
+        
+        #List of paths in tree
+        self.pathlist = []
+        
         #Path to location picked label
         self.pathTo = tk.Label(self, wrap=450)
         self.pathTo["text"] = ""
@@ -37,9 +43,9 @@ class Application(tk.Frame):
         
         #Enabled listbox
         self.enabledscroll = tk.Scrollbar(self, orient="vertical")
-        self.enabledList = tk.Listbox(yscrollcommand=self.enabledscroll, selectmode='multiple')
+        self.enabledList = ttk.Treeview(yscrollcommand=self.enabledscroll, selectmode='extended', show="tree")
         self.enabledList.place(x=10, y=100, height=380, width=200)
-        self.enabledList.bind("<<ListboxSelect>>", self.selectionChanged)
+        #self.enabledList.bind("<<ListboxSelect>>", self.selectionChanged)
         
         #Disabled title label
         self.disabledTitle = tk.Label(self)
@@ -48,9 +54,9 @@ class Application(tk.Frame):
 
         #Disabled listbox
         self.disabledscroll = tk.Scrollbar(self, orient="vertical")
-        self.disabledList = tk.Listbox(yscrollcommand=self.disabledscroll, selectmode='multiple')
+        self.disabledList = ttk.Treeview(yscrollcommand=self.disabledscroll, selectmode='extended', show="tree")
         self.disabledList.place(x=280, y=100, height=380, width=200)
-        self.disabledList.bind("<<ListboxSelect>>", self.selectionChanged)
+        #self.disabledList.bind("<<ListboxSelect>>", self.selectionChanged)
         
         self.recentlist = [""]*20
         #load location if exists
@@ -74,8 +80,12 @@ class Application(tk.Frame):
                 if not self.pathTo["text"] == "" and path.exists(self.pathTo["text"]):
                     self.populateLists(self.pathTo["text"])
         except Exception as e:
-            messagebox.showerror(title=None, message="There was an error. A file has been produced in the location of the program. Please send this to the author and they'll try to get you sorted!")
-            error_file = open("error_log.txt", "w")
+            messagebox.showerror(title=None, message="There was an error. A file has been produced in the location of the program for Windows or your Desktop for Mac. Please send this to the author and they'll try to get you sorted!")
+            if platform.system() == "Darwin":
+                homedirdesk = path.expanduser('~')+"Desktop"+self.slash
+                error_file = open(homedirdesk+"error_log.txt", "w")
+            else:
+                error_file = open("error_log.txt", "w")
             error_file.write(traceback.format_exc())
             error_file.close()
     
@@ -165,8 +175,6 @@ class Application(tk.Frame):
             locationToLoad = ""
         if locationToLoad != None:
             self.pathTo["text"] = ""
-            self.enabledList.delete(0,tk.END)
-            self.disabledList.delete(0, tk.END)
             try:
                 cancelled = False
                 if path.exists(fileToLoad):
@@ -175,16 +183,6 @@ class Application(tk.Frame):
                         if line:
                             if path.exists(line.strip()):
                                 self.pathTo["text"] = line.strip()
-                                disabledlisttomonitor = []
-                                enabledlisttomonitor = []
-                                for root, dirs, files in os.walk(line.strip()):
-                                    if path.exists(root+self.slash+"manifest.json"):
-                                        splitroot = root.split(self.slash)
-                                        childdir = splitroot[len(splitroot) - 1]
-                                        if childdir[0:1] == ".":
-                                            disabledlisttomonitor.append(root.strip())
-                                        else:
-                                            enabledlisttomonitor.append(root.strip())
                             else:
                                 messagebox.showerror(message="The folder specified in this .load file no longer exists, can't load this file!")
                                 cancelled = True
@@ -206,40 +204,23 @@ class Application(tk.Frame):
                                     opposite = opposite + "." + linesplit[len(linesplit)-1]
                                 else:
                                     opposite = opposite + self.slash + "." + linesplit[len(linesplit)-1]
-                                if path.exists(self.pathTo["text"] + self.slash + line.strip()):
-                                    self.enabledList.insert(tk.END, line.strip())
-                                    if self.pathTo["text"] + self.slash + line.strip() in enabledlisttomonitor:
-                                        enabledlisttomonitor.remove(self.pathTo["text"] + self.slash + line.strip())
-                                elif path.exists(self.pathTo["text"] + self.slash + opposite):
-                                    self.enabledList.insert(tk.END, line.strip())
-                                    if self.pathTo["text"] + self.slash + opposite in disabledlisttomonitor:
-                                        disabledlisttomonitor.remove(self.pathTo["text"] + self.slash + opposite)
-                                        os.rename(self.pathTo["text"] + self.slash + opposite, self.pathTo["text"] + self.slash +line.strip())
+                                if path.exists(self.pathTo["text"] + self.slash + opposite):
+                                    os.rename(self.pathTo["text"] + self.slash + opposite, self.pathTo["text"] + self.slash +line.strip())
                             else:
                                 if opposite == "":
                                     opposite = opposite + linesplit[len(linesplit)-1][1:]
                                 else:
                                     opposite = opposite + self.slash + linesplit[len(linesplit)-1][1:]
-                                if path.exists(self.pathTo["text"] + self.slash + line.strip()):
-                                    self.disabledList.insert(tk.END, line.strip())
-                                    if self.pathTo["text"] + self.slash + line.strip() in disabledlisttomonitor:
-                                        disabledlisttomonitor.remove(self.pathTo["text"] + self.slash + line.strip())
-                                elif path.exists(self.pathTo["text"] + self.slash + opposite):
-                                    self.disabledList.insert(tk.END, line.strip())
-                                    if self.pathTo["text"] + self.slash + opposite in enabledlisttomonitor:
-                                        enabledlisttomonitor.remove(self.pathTo["text"] + self.slash + opposite)
-                                        os.rename(self.pathTo["text"] + self.slash + opposite, self.pathTo["text"] + self.slash + line.strip())
+                                if path.exists(self.pathTo["text"] + self.slash + opposite):
+                                    os.rename(self.pathTo["text"] + self.slash + opposite, self.pathTo["text"] + self.slash + line.strip())
                             line = f.readline()
                         f.close()
-                        for i in enabledlisttomonitor:
-                            self.enabledList.insert(tk.END, i.replace(self.pathTo["text"], ""))
-                        for i in disabledlisttomonitor:
-                            self.disabledList.insert(tk.END, i.replace(self.pathTo["text"], ""))
                 if fileToLoad not in self.recentlist:
                     for i in range(18, -1, -1):
                         self.recentlist[i+1] = self.recentlist[i]
                     self.recentlist[0] = fileToLoad
                     self.updateRecentMenu()
+                self.populateLists(self.pathTo["text"])
             except IOError as e:
                 messagebox.showerror(message = "Couldn't open the file, aborting!\n"+str(e))
     
@@ -256,10 +237,8 @@ class Application(tk.Frame):
                     locationToSave = locationToSave + ".load"
                 with open(locationToSave, "w") as f:
                     f.write(self.pathTo["text"]+"\n")
-                    for i in range(0,self.enabledList.size()):
-                        f.write(self.enabledList.get(i)+"\n")
-                    for i in range(0,self.disabledList.size()):
-                        f.write(self.disabledList.get(i)+"\n")
+                    for i in self.pathlist:
+                        f.write(i+"\n")
                     f.close()
                 if locationToSave not in self.recentlist:
                     for i in range(18, -1, -1):
@@ -321,89 +300,142 @@ class Application(tk.Frame):
     def populateLists(self, loc):
         try:
             if path.exists(loc):
-                self.enabledList.delete(0,tk.END)
-                self.disabledList.delete(0, tk.END)
+                self.enabledList.delete(*self.enabledList.get_children())
+                self.disabledList.delete(*self.disabledList.get_children())
+                self.pathlist.clear()
                 for root, dirs, files in os.walk(loc):
-                    if path.exists(root+self.slash+"manifest.json"):
-                        innerdirs =root.replace(loc+self.slash, "").split(self.slash);
-                        findir = innerdirs[len(innerdirs)-1]
-                        if(findir[0:1] != "."):
-                            self.enabledList.insert(self.enabledList.size(), root.replace(loc+self.slash, ""))
+                    slasher = root.replace("/", self.slash)
+                    slasher = root.replace("\\", self.slash) 
+                    if path.exists(slasher+self.slash+"manifest.json"):
+                        testforparent = False
+                        for j in self.pathlist:
+                            if j+self.slash in slasher.replace(loc+self.slash, ""):
+                                testforparent = True
+                        if not testforparent:
+                            self.pathlist.append(slasher.replace(loc+self.slash, ""))
+                for i in self.pathlist:
+                    splitpath = i.split(self.slash)
+                    for j in range(0, len(splitpath)):
+                        if not splitpath[len(splitpath) - 1][0:1] == ".":
+                            if j == 0:
+                                if not self.enabledList.exists(splitpath[j]):
+                                    self.enabledList.insert('', 'end', splitpath[j], text=splitpath[0])
+                            else:
+                                if not self.enabledList.exists(splitpath[j]):
+                                    self.enabledList.insert(splitpath[j - 1], 'end', splitpath[j], text=splitpath[j])
                         else:
-                            self.disabledList.insert(self.enabledList.size(), root.replace(loc+self.slash, ""))
+                            if j == 0:
+                                if not self.disabledList.exists(splitpath[j]):
+                                    self.disabledList.insert('', 'end', splitpath[j], text=splitpath[0])
+                            else:
+                                if not self.disabledList.exists(splitpath[j]):
+                                    self.disabledList.insert(splitpath[j - 1], 'end', splitpath[j], text=splitpath[j])
         except Exception as e:
-            messagebox.showerror(title=None, message="There was an error. A file has been produced in the location of the program. Please send this to the author and they'll try to get you sorted!")
-            error_file = open("error_log.txt", "w")
+            messagebox.showerror(title=None, message="There was an error. A file has been produced in the location of the program for Windows or your Desktop for Mac. Please send this to the author and they'll try to get you sorted!")
+            if platform.system() == "Darwin":
+                homedirdesk = path.expanduser('~')+"Desktop"+self.slash
+                error_file = open(homedirdesk+"error_log.txt", "w")
+            else:
+                error_file = open("error_log.txt", "w")
             error_file.write(traceback.format_exc())
             error_file.close()
-
+            
     def steamFolderFinder(self):
         try:
             if platform.system() == "Windows":
-                if path.exists("C:\Program Files (x86)\Steam\steamapps\common\Stardew Valley\Mods"):
-                    self.pathTo["text"] = "C:\Program Files (x86)\Steam\steamapps\common\Stardew Valley\Mods"
+                if path.exists("C:\\Program Files (x86)\\Steam\\steamapps\\common\\Stardew Valley\\Mods"):
+                    self.pathTo["text"] = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Stardew Valley\\Mods"
                     self.populateLists(self.pathTo["text"])
-                if path.exists("C:\Program Files\Steam\steamapps\common\Stardew Valley\Mods"):
-                    self.pathTo["text"] = "C:\Program Files (x86)\Steam\steamapps\common\Stardew Valley\Mods"
+                if path.exists("C:\\Program Files\\Steam\\steamapps\\common\\Stardew Valley\\Mods"):
+                    self.pathTo["text"] = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Stardew Valley\\Mods"
                     self.populateLists(self.pathTo["text"])
             if platform.system() == "Darwin":
                 homedir = path.expanduser('~')
                 if path.exists(homedir+"/Library/Application Support/Steam/steamapps/common/Stardew Valley/Mods"):
                     self.pathTo["text"] = homedir+"/Library/Application Support/Steam/steamapps/common/Stardew Valley/Mods"
                     self.populateLists(self.pathTo["text"])
+                if path.exists("/Library/Application Support/Steam/steamapps/common/Stardew Valley/Mods"):
+                    self.pathTo["text"] = "/Library/Application Support/Steam/steamapps/common/Stardew Valley/Mods"
+                    self.populateLists(self.pathTo["text"])
         except Exception as e:
-            messagebox.showerror(title=None, message="There was an error. A file has been produced in the location of the program. Please send this to the author and they'll try to get you sorted!")
-            error_file = open("error_log.txt", "w")
+            messagebox.showerror(title=None, message="There was an error. A file has been produced in the location of the program for Windows or your Desktop for Mac. Please send this to the author and they'll try to get you sorted!")
+            if platform.system() == "Darwin":
+                homedirdesk = path.expanduser('~')+"Desktop"+self.slash
+                error_file = open(homedirdesk+"error_log.txt", "w")
+            else:
+                error_file = open("error_log.txt", "w")
             error_file.write(traceback.format_exc())
             error_file.close()
     
     def moveToDisabled(self):
-        tupleEnabled = self.enabledList.curselection()
+        tupleEnabled = self.enabledList.selection()
         try:
-            for i in reversed(tupleEnabled):
-                holder = self.enabledList.get(i)
-                holdersplit = holder.split(self.slash)
-                holderfin = ""
-                for j in range(0, len(holdersplit)-1):
-                    if holderfin == "":
-                        holderfin = holderfin + holdersplit[j]
-                    else:
-                        holderfin = holderfin + self.slash + holdersplit[j]
-                if holderfin == "":
-                    holderfin = "." + holdersplit[len(holdersplit) - 1]
-                else:
-                    holderfin = holderfin + self.slash + "." + holdersplit[len(holdersplit) - 1]
-                os.rename(self.pathTo["text"] + self.slash + holder, self.pathTo["text"] + self.slash + holderfin)
-                self.enabledList.delete(i)
-                self.disabledList.insert(self.disabledList.size(), holderfin)
+            for i in tupleEnabled:
+                parent = self.enabledList.parent(i)
+                fulldir = i
+                parentsManaged = []
+                while parent != '':
+                    fulldir = parent + self.slash +fulldir
+                    parent = self.enabledList.parent(parent)
+                for j in self.pathlist:
+                    if fulldir in j:
+                        splitpath = j.split(self.slash)
+                        if splitpath[len(splitpath)-1][0:1] != ".":
+                            splitpath[len(splitpath)-1] = "." + splitpath[len(splitpath)-1]
+                        pathToAdd = ""
+                        for k in range(0, len(splitpath)):
+                            if k == 0:
+                                pathToAdd = splitpath[k] 
+                            else:
+                                pathToAdd = pathToAdd + self.slash + splitpath[k]
+                            if k == len(splitpath) - 2:
+                                os.makedirs(self.pathTo["text"] + self.slash + pathToAdd, exist_ok = True)
+                        if not path.exists(self.pathTo["text"] + self.slash + pathToAdd):
+                            os.rename(self.pathTo["text"] + self.slash + j, self.pathTo["text"] + self.slash + pathToAdd)
+            self.populateLists(self.pathTo["text"])
         except Exception as e:
-            messagebox.showerror(title=None, message="There was an error. A file has been produced in the location of the program. Please send this to the author and they'll try to get you sorted!")
-            error_file = open("error_log.txt", "w")
+            messagebox.showerror(title=None, message="There was an error. A file has been produced in the location of the program for Windows or your Desktop for Mac. Please send this to the author and they'll try to get you sorted!")
+            if platform.system() == "Darwin":
+                homedirdesk = path.expanduser('~')+"Desktop"+self.slash
+                error_file = open(homedirdesk+"error_log.txt", "w")
+            else:
+                error_file = open("error_log.txt", "w")
             error_file.write(traceback.format_exc())
             error_file.close()
                 
     def moveToEnabled(self):
-        tupleDisabled = self.disabledList.curselection()
+        tupleDisabled = self.disabledList.selection()
         try:
-            for i in reversed(tupleDisabled):
-                holder = self.disabledList.get(i)
-                holdersplit = holder.split(self.slash)
-                holderfin = ""
-                for j in range(0, len(holdersplit)-1):
-                    if holderfin == "":
-                        holderfin = holderfin + holdersplit[j]
-                    else:
-                        holderfin = holderfin + self.slash + holdersplit[j]
-                if holderfin == "":
-                    holderfin = holdersplit[len(holdersplit) - 1][1:]
-                else:
-                    holderfin = holderfin + self.slash + holdersplit[len(holdersplit) - 1][1:]
-                os.rename(self.pathTo["text"] + self.slash + holder, self.pathTo["text"] + self.slash + holderfin)
-                self.disabledList.delete(i)
-                self.enabledList.insert(self.enabledList.size(), holderfin)
+            for i in tupleDisabled:
+                parent = self.disabledList.parent(i)
+                fulldir = i;
+                parentsManaged = []
+                while parent != '':
+                    fulldir = parent + self.slash +fulldir
+                    parent = self.disabledList.parent(parent)
+                for j in self.pathlist:
+                    if fulldir in j:
+                        splitpath = j.split(self.slash)
+                        while splitpath[len(splitpath) - 1][0:1] == ".":
+                            splitpath[len(splitpath) - 1] = splitpath[len(splitpath) - 1][1:]
+                        pathToAdd = ""
+                        for k in range(0, len(splitpath)):
+                            if k == 0:
+                                pathToAdd = splitpath[k] 
+                            else:
+                                pathToAdd = pathToAdd + self.slash + splitpath[k]
+                            if k == len(splitpath) - 2:
+                                os.makedirs(self.pathTo["text"] + self.slash + pathToAdd, exist_ok = True)
+                        if not path.exists(self.pathTo["text"] + self.slash + pathToAdd):
+                                os.rename(self.pathTo["text"] + self.slash + j, self.pathTo["text"] + self.slash + pathToAdd)
+            self.populateLists(self.pathTo["text"])
         except Exception as e:
-            messagebox.showerror(title=None, message="There was an error. A file has been produced in the location of the program. Please send this to the author and they'll try to get you sorted!")
-            error_file = open("error_log.txt", "w")
+            messagebox.showerror(title=None, message="There was an error. A file has been produced in the location of the program for Windows or your Desktop for Mac. Please send this to the author and they'll try to get you sorted!")
+            if platform.system() == "Darwin":
+                homedirdesk = path.expanduser('~')+"Desktop"+self.slash
+                error_file = open(homedirdesk+"error_log.txt", "w")
+            else:
+                error_file = open("error_log.txt", "w")
             error_file.write(traceback.format_exc())
             error_file.close()
 
@@ -421,20 +453,24 @@ def closingWindow(app, root):
                 data.write("\n"+str(i))
         data.close()
     except Exception as e:
-        messagebox.showerror(title=None, message="There was an error. A file has been produced in the location of the program. Please send this to the author and they'll try to get you sorted!")
-        error_file = open("error_log.txt", "w")
+        messagebox.showerror(title=None, message="There was an error. A file has been produced in the location of the program for Windows or your Desktop for Mac. Please send this to the author and they'll try to get you sorted!")
+        if platform.system() == "Darwin":
+            homedirdesk = path.expanduser('~')+"Desktop"+self.slash
+            error_file = open(homedirdesk+"error_log.txt", "w")
+        else:
+            error_file = open("error_log.txt", "w")
         error_file.write(traceback.format_exc())
         error_file.close()
     root.destroy()
 
 root = tk.Tk()
-root.title("Stardew Mod Manager")
+root.title("Stardew SMAPI Mod Manager")
 root.geometry("500x540")
 root.resizable(0,0)
-root.iconbitmap('3.ico')
 app=Application(master=root)
+root.iconbitmap(os.getcwd() + app.slash + '3.ico')
 root.protocol("WM_DELETE_WINDOW", lambda: closingWindow(app, root))
-updatekey = "394063d304b3141d11e3a4df47f065d5609f1a0d3e926c8a178261243ed342f7"
+updatekey = "90d4148d4b279419b8d2786ce4d0ebbf8656aa70640e3ebf25371200012f88d2"
 try:
     context=ssl._create_unverified_context()
     updatematchurlobject = urllib.request.urlopen("https://raw.githubusercontent.com/Akaie/StardewSMAPIModManager/main/bin/key", context=context)
